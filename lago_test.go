@@ -8,7 +8,34 @@ import (
 	"testing"
 )
 
-func TestNewLJL(t *testing.T) {
+var (
+	tStr0     = "Test string."
+	tPre0     = "test_"
+	tDirRoot0 = "./"
+	tDir0     string
+)
+
+func TestMain(m *testing.M) {
+	var err error
+
+	tDir0, err = ioutil.TempDir(tDirRoot0, tPre0)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	c := m.Run()
+
+	err = os.RemoveAll(tDir0)
+	if err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	os.Exit(c)
+}
+
+func TestUnitNewLJL(t *testing.T) {
 	l := newLumberjackLogger(nil)
 	if l != nil {
 		t.Errorf("want nil, got %T", l)
@@ -19,17 +46,12 @@ func TestNewLJL(t *testing.T) {
 		t.Errorf("want nil, got %T", l)
 	}
 
-	f, err := ioutil.TempFile("./", "test")
+	f, err := ioutil.TempFile(tDir0, tPre0)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
 		_ = f.Close()
-
-		err := os.Remove(f.Name())
-		if err != nil {
-			fmt.Printf("WARN: tmp file not removed: %s\n", err)
-		}
 	}()
 
 	l = newLumberjackLogger(&Options{
@@ -82,17 +104,12 @@ func TestUnitNewFunc(t *testing.T) {
 		t.Errorf("don't want nil, got %T", l)
 	}
 
-	f, err := ioutil.TempFile("./", "test")
+	f, err := ioutil.TempFile(tDir0, tPre0)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer func() {
 		_ = f.Close()
-
-		err := os.Remove(f.Name())
-		if err != nil {
-			fmt.Printf("WARN: tmp file not removed: %s\n", err)
-		}
 	}()
 
 	l = New(&Options{
