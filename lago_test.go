@@ -15,7 +15,7 @@ var (
 	tDir0     string
 )
 
-func TestMain(m *testing.M) {
+func SetupUnit() {
 	var err error
 
 	tDir0, err = ioutil.TempDir(tDirRoot0, tPre0)
@@ -23,19 +23,20 @@ func TestMain(m *testing.M) {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+}
 
-	c := m.Run()
-
-	err = os.RemoveAll(tDir0)
+func TeardownUnit() {
+	err := os.RemoveAll(tDir0)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	os.Exit(c)
 }
 
 func TestUnitNewLJL(t *testing.T) {
+	SetupUnit()
+	defer TeardownUnit()
+
 	l := newLumberjackLogger(nil)
 	if l != nil {
 		t.Errorf("want nil, got %T", l)
@@ -64,6 +65,9 @@ func TestUnitNewLJL(t *testing.T) {
 }
 
 func TestUnitJoinWriters(t *testing.T) {
+	SetupUnit()
+	defer TeardownUnit()
+
 	var a, b io.Writer
 
 	c := joinWriters(a, b)
@@ -87,6 +91,9 @@ func TestUnitJoinWriters(t *testing.T) {
 }
 
 func TestUnitDevNull(t *testing.T) {
+	SetupUnit()
+	defer TeardownUnit()
+
 	l := NewDevNull()
 	if l == nil {
 		t.Errorf("don't want nil, got %T", l)
@@ -94,6 +101,9 @@ func TestUnitDevNull(t *testing.T) {
 }
 
 func TestUnitNewFunc(t *testing.T) {
+	SetupUnit()
+	defer TeardownUnit()
+
 	l := New(nil)
 	if l == nil {
 		t.Errorf("don't want nil, got %T", l)
@@ -114,6 +124,30 @@ func TestUnitNewFunc(t *testing.T) {
 
 	l = New(&Options{
 		Filepath: f.Name(),
+	})
+
+	if l == nil {
+		t.Errorf("don't want nil, got %T", l)
+	}
+
+	l = New(&Options{
+		StdStream: DevNull,
+	})
+
+	if l == nil {
+		t.Errorf("don't want nil, got %T", l)
+	}
+
+	l = New(&Options{
+		StdStream: Stdout,
+	})
+
+	if l == nil {
+		t.Errorf("don't want nil, got %T", l)
+	}
+
+	l = New(&Options{
+		StdStream: Stderr,
 	})
 
 	if l == nil {
