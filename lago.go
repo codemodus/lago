@@ -11,13 +11,37 @@ import (
 )
 
 type stdStreamer interface {
-	io.Writer
+	Writer() io.Writer
+}
+
+type devNil struct{}
+
+func (s *devNil) Writer() io.Writer {
+	return nil
+}
+
+type devNull struct{}
+
+func (s *devNull) Writer() io.Writer {
+	return ioutil.Discard
+}
+
+type stdout struct{}
+
+func (s *stdout) Writer() io.Writer {
+	return os.Stdout
+}
+
+type stderr struct{}
+
+func (s *stderr) Writer() io.Writer {
+	return os.Stderr
 }
 
 var (
-	DevNull stdStreamer = ioutil.Discard
-	Stdout  stdStreamer = os.Stdout
-	Stderr  stdStreamer = os.Stderr
+	DevNull stdStreamer = &devNull{}
+	Stdout  stdStreamer = &stdout{}
+	Stderr  stdStreamer = &stderr{}
 )
 
 type Options struct {
@@ -41,9 +65,13 @@ func New(opts *Options) (l *Logger) {
 		return NewDevNull()
 	}
 
+	if opts.StdStream == nil {
+		opts.StdStream = &devNil{}
+	}
+
 	f := newLumberjackLogger(opts)
 
-	w := joinWriters(f, opts.StdStream)
+	w := joinWriters(f, opts.StdStream.Writer())
 
 	r := joinWriters(w, opts.LogWriter)
 
