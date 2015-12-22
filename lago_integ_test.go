@@ -132,7 +132,7 @@ func TestIntegFilepathStdStreamWriter(t *testing.T) {
 	l := lago.New(&lago.Options{
 		Filepath:  ff.Name(),
 		StdStream: lago.Stdout,
-		LogWriter: wf,
+		UniWriter: wf,
 	})
 
 	l.Println(tStr0)

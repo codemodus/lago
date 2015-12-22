@@ -47,7 +47,8 @@ var (
 type Options struct {
 	Filepath   string
 	StdStream  StdStreamer
-	LogWriter  io.Writer
+	UniWriter  io.Writer
+	UniPrefix  string
 	WithTime   bool
 	MaxSize    int
 	MaxAge     int
@@ -73,7 +74,7 @@ func New(opts *Options) (l *Logger) {
 
 	w := joinWriters(f, opts.StdStream.Writer())
 
-	r := joinWriters(w, opts.LogWriter)
+	r := joinWriters(w, opts.UniWriter)
 
 	if r == nil {
 		return NewDevNull()
