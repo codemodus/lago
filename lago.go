@@ -10,7 +10,7 @@ import (
 	"gopkg.in/natefinch/lumberjack.v2"
 )
 
-type stdStreamer interface {
+type StdStreamer interface {
 	Writer() io.Writer
 }
 
@@ -39,14 +39,14 @@ func (s *stderr) Writer() io.Writer {
 }
 
 var (
-	DevNull stdStreamer = &devNull{}
-	Stdout  stdStreamer = &stdout{}
-	Stderr  stdStreamer = &stderr{}
+	DevNull StdStreamer = &devNull{}
+	Stdout  StdStreamer = &stdout{}
+	Stderr  StdStreamer = &stderr{}
 )
 
 type Options struct {
 	Filepath   string
-	StdStream  stdStreamer
+	StdStream  StdStreamer
 	LogWriter  io.Writer
 	WithTime   bool
 	MaxSize    int
