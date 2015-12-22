@@ -9,6 +9,10 @@ import (
 	"github.com/codemodus/lago"
 )
 
+var (
+	ts = "test"
+)
+
 func TestIntegNewFuncNilOpts(t *testing.T) {
 	l := lago.New(nil)
 	if l == nil {
@@ -47,7 +51,7 @@ func TestIntegNewFuncCompleteOpts(t *testing.T) {
 		t.Fatalf("don't want nil, got %T", l)
 	}
 
-	l.Printf("test")
+	l.Printf(ts)
 
 	tf, err := os.Open(f.Name())
 	if err != nil {
@@ -59,7 +63,7 @@ func TestIntegNewFuncCompleteOpts(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	if string(b)[:len(b)-1] != "test" {
-		t.Errorf("want %s, got %s", "test", string(b))
+	if string(b)[:len(b)-1] != ts {
+		t.Errorf("want %s, got %s", ts, string(b)[:len(b)-1])
 	}
 }
