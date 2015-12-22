@@ -151,7 +151,7 @@ func TestIntegFilepathStdStreamWriter(t *testing.T) {
 	}
 
 	if len(b) == 0 {
-		t.Error("want %s, got empty string", tStr0)
+		t.Errorf("want %s, got empty string", tStr0)
 	}
 
 	if len(b) > 0 && string(b)[:len(b)-1] != tStr0 {
@@ -172,7 +172,7 @@ func TestIntegFilepathStdStreamWriter(t *testing.T) {
 	}
 
 	if len(b) == 0 {
-		t.Error("want %s, got empty string", tStr0)
+		t.Errorf("want %s, got empty string", tStr0)
 	}
 
 	if len(b) > 0 && string(b)[:len(b)-1] != tStr0 {
@@ -193,7 +193,7 @@ func TestIntegFilepathStdStreamWriter(t *testing.T) {
 	}
 
 	if len(b) == 0 {
-		t.Error("want %s, got empty string", tStr0)
+		t.Errorf("want %s, got empty string", tStr0)
 	}
 
 	if len(b) > 0 && string(b)[:len(b)-1] != tStr0 {
