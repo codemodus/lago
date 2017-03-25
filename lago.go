@@ -1,127 +1,38 @@
 // Package lago provides a simple way to setup logging.
 package lago
 
-import (
-	"io"
-	"io/ioutil"
-	"log"
-	"os"
-
-	"gopkg.in/natefinch/lumberjack.v2"
-)
-
-type StdStreamer interface {
-	Writer() io.Writer
+// Logger ...
+type Logger interface {
+	Error(args ...interface{})
+	Errorf(format string, args ...interface{})
+	Info(args ...interface{})
+	Infof(format string, args ...interface{})
+	Warn(args ...interface{})
+	Warnf(format string, args ...interface{})
 }
 
-type devNil struct{}
+// NullLogger ...
+type NullLogger struct{}
 
-func (s *devNil) Writer() io.Writer {
-	return nil
+// NewNullLogger ...
+func NewNullLogger() *NullLogger {
+	return &NullLogger{}
 }
 
-type devNull struct{}
+// Error ...
+func (l *NullLogger) Error(args ...interface{}) {}
 
-func (s *devNull) Writer() io.Writer {
-	return ioutil.Discard
-}
+// Errorf ...
+func (l *NullLogger) Errorf(format string, args ...interface{}) {}
 
-type stdout struct{}
+// Info ...
+func (l *NullLogger) Info(args ...interface{}) {}
 
-func (s *stdout) Writer() io.Writer {
-	return os.Stdout
-}
+// Infof ...
+func (l *NullLogger) Infof(format string, args ...interface{}) {}
 
-type stderr struct{}
+// Warn ...
+func (l *NullLogger) Warn(args ...interface{}) {}
 
-func (s *stderr) Writer() io.Writer {
-	return os.Stderr
-}
-
-var (
-	DevNull StdStreamer = &devNull{}
-	Stdout  StdStreamer = &stdout{}
-	Stderr  StdStreamer = &stderr{}
-)
-
-type Options struct {
-	Filepath   string
-	StdStream  StdStreamer
-	UniWriter  io.Writer
-	UniPrefix  string
-	WithTime   bool
-	MaxSize    int
-	MaxAge     int
-	MaxBackups int
-	LocalTime  bool
-}
-
-// Logger wraps a std lib logger.
-type Logger struct {
-	*log.Logger
-}
-
-func New(opts *Options) (l *Logger) {
-	if opts == nil {
-		return NewDevNull()
-	}
-
-	if opts.StdStream == nil {
-		opts.StdStream = &devNil{}
-	}
-
-	f := newLumberjackLogger(opts)
-
-	w := joinWriters(f, opts.StdStream.Writer())
-
-	r := joinWriters(w, opts.UniWriter)
-
-	if r == nil {
-		return NewDevNull()
-	}
-
-	fs := log.LstdFlags
-	if !opts.WithTime {
-		fs = 0
-	}
-
-	return &Logger{
-		log.New(r, "", fs),
-	}
-}
-
-func NewDevNull() *Logger {
-	return &Logger{
-		log.New(ioutil.Discard, "", 0),
-	}
-}
-
-func newLumberjackLogger(opts *Options) io.Writer {
-	if opts == nil || opts.Filepath == "" {
-		return nil
-	}
-
-	return &lumberjack.Logger{
-		Filename:   opts.Filepath,
-		MaxSize:    opts.MaxSize,
-		MaxAge:     opts.MaxAge,
-		MaxBackups: opts.MaxBackups,
-		LocalTime:  opts.LocalTime,
-	}
-}
-
-func joinWriters(a, b io.Writer) (c io.Writer) {
-	if a != nil && b != nil {
-		c = io.MultiWriter(a, b)
-	}
-
-	if c == nil {
-		c = a
-	}
-
-	if c == nil {
-		c = b
-	}
-
-	return c
-}
+// Warnf ...
+func (l *NullLogger) Warnf(format string, args ...interface{}) {}
